@@ -1,0 +1,30 @@
+strategies:
+  momentum:
+    enabled: true
+    universe: sp500
+    lookback: 252
+    top_n: 20
+    rebalance: monthly
+    max_weight: 0.1
+
+  mean_reversion:
+    enabled: true
+    universe: russell1000
+    zscore_entry: 2.0
+    zscore_exit: 0.5
+    lookback: 20
+    max_hold_days: 5
+
+  pairs:
+    enabled: true
+    pairs_file: config/pairs.json
+    entry_spread_z: 2.0
+    exit_spread_z: 0.25
+    stop_loss_z: 3.5
+
+  options_vol:
+    enabled: false
+    underlying: SPX
+    target_delta: 0.15
+    target_dte: 30
+    max_vega: 50000
