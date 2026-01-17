@@ -1,0 +1,40 @@
+# core
+numpy==1.26.4
+pandas==2.2.2
+scipy==1.13.0
+
+# market data
+yfinance==0.2.38
+alpaca-trade-api==3.3.0
+polygon-api-client==1.14.0
+ib_insync==0.9.86
+
+# ML / signals
+scikit-learn==1.4.2
+lightgbm==4.3.0
+statsmodels==0.14.2
+ta-lib==0.4.28
+
+# async / streaming
+aiohttp==3.9.5
+websockets==12.0
+asyncpg==0.29.0
+
+# infra
+redis==5.0.4
+pydantic==2.7.1
+pydantic-settings==2.2.1
+structlog==24.1.0
+prometheus-client==0.20.0
+PyYAML==6.0.1
+
+# testing
+pytest==8.2.0
+pytest-asyncio==0.23.6
+pytest-cov==5.0.0
+hypothesis==6.100.1
+
+# dev
+ruff==0.4.4
+mypy==1.10.0
+pre-commit==3.7.1
