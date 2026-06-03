@@ -51,3 +51,4 @@ class RiskGate:
 
         log.debug("risk_pass", symbol=order.symbol, qty=order.qty)
         return RiskEvent(order=order, decision="PASS")
+
