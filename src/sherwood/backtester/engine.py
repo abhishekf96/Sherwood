@@ -88,3 +88,4 @@ class Backtester:
         returns = eq.pct_change().dropna()
 
         return BacktestResult(returns=returns, equity_curve=eq, trades=trades)
+
