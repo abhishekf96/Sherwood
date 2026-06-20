@@ -56,3 +56,4 @@ def test_mean_reversion_confidence_bounded():
     strategy = MeanReversionStrategy({"lookback": 20, "zscore_entry": 1.0})
     for sig in strategy.generate_signals(data):
         assert 0.0 <= sig.confidence <= 1.0
+
