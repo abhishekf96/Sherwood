@@ -48,3 +48,4 @@ class ExecutionRouter:
         except Exception:
             log.exception("order_failed", symbol=order.symbol, venue=best_venue)
             return None
+
