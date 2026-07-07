@@ -23,3 +23,4 @@
 - Event types: Tick, Signal, Order, Fill, Risk
 - IBKR adapter stub
 - Backtester with Monte Carlo drawdown analysis
+
