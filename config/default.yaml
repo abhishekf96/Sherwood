@@ -9,7 +9,7 @@ engine:
   timezone: America/New_York
 
 data:
-  provider: alpaca
+  provider: robinhood_chain
   cache_ttl: 300
   bar_size: 1m
   lookback_days: 5
@@ -17,6 +17,13 @@ data:
 broker:
   primary: alpaca
   fallback: ibkr
+
+chain:
+  enabled: true
+  rpc: https://rpc.mainnet.chain.robinhood.com
+  chain_id: 4663
+  confirm_blocks: 2
+  gas_limit: 300000
 
 logging:
   level: INFO
