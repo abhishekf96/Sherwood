@@ -1,0 +1,14 @@
+{
+  "pairs": [
+    {"leg1": "XLF", "leg2": "KBE",  "sector": "financials"},
+    {"leg1": "XLE", "leg2": "XOP",  "sector": "energy"},
+    {"leg1": "XLK", "leg2": "SMH",  "sector": "technology"},
+    {"leg1": "GLD", "leg2": "SLV",  "sector": "commodities"},
+    {"leg1": "SPY", "leg2": "IVV",  "sector": "broad"},
+    {"leg1": "QQQ", "leg2": "ONEQ", "sector": "nasdaq"},
+    {"leg1": "WMT", "leg2": "TGT",  "sector": "retail"},
+    {"leg1": "JPM", "leg2": "BAC",  "sector": "banks"},
+    {"leg1": "AAPL", "leg2": "MSFT","sector": "megacap"},
+    {"leg1": "XOM", "leg2": "CVX",  "sector": "oil_majors"}
+  ]
+}
