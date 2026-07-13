@@ -1,0 +1,22 @@
+# Custom symbol universe — edit to override the default S&P 500 sample
+symbols:
+  - AAPL
+  - MSFT
+  - NVDA
+  - GOOGL
+  - AMZN
+  - META
+  - TSLA
+  - BRK.B
+  - JPM
+  - V
+  - MA
+  - XOM
+  - UNH
+  - AVGO
+  - LLY
+  - HD
+  - PG
+  - COST
+  - JNJ
+  - ABBV
