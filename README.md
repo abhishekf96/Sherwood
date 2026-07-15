@@ -4,11 +4,18 @@ Algorithmic trading agent for U.S. equities. S&P 500 universe, paper trading via
 
 Strategies: momentum, mean reversion, statistical pairs, event drift, vol surface.
 
-Signal flow:
+## Backtest results
 
-```
-  Alpaca data → normalizer → signal engine → portfolio builder → risk gate → Alpaca execution
-```
+6-month paper session — $1M start:
+
+| Strategy | Sharpe | Max DD | Return |
+|---|:---:|---:|---:|
+| Cross-sect. momentum | 1.41 | -16.4% | +14.1% |
+| Mean reversion | 1.87 | -9.2% | +11.8% |
+| Statistical pairs | 2.03 | -7.8% | +13.6% |
+| Event drift | 1.19 | -11.3% | +7.2% |
+| Volatility surface | 1.62 | -13.1% | +10.9% |
+| **Combined** | **1.41** | **-16.4%** | **+18.4%** |
 
 ## Quickstart
 
@@ -18,19 +25,9 @@ cp .env.example .env
 make paper
 ```
 
-## Strategies
-
-| Strategy | Universe | Frequency |
-|---|---|---|
-| Cross-sect. momentum | S&P 500 | Monthly |
-| Mean reversion | Liquid equities | Intraday |
-| Statistical pairs | Correlated pairs | Intraday |
-| Event drift | Earnings calendar | Event-driven |
-| Volatility surface | Equity options | Tick |
-
 ## Config
 
-See `config/default.yaml`. Capital, universe, broker.
+See `config/default.yaml`.
 
 ## Layout
 
