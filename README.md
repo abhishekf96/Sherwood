@@ -1,20 +1,21 @@
 # Sherwood
 
-**Institutional-grade algorithmic trading infrastructure for equity and derivatives markets.**
+Sherwood watches markets and acts on them. It reads live data, decides when to enter and exit,
+sizes positions, checks its own risk, and routes orders — without being told to.
 
-Sub-millisecond execution. Multi-strategy portfolio construction. Production-ready risk management.
+Built for US equity and derivatives markets. Runs unattended.
 
 ---
 
 ## What it does
 
-Sherwood is a complete systematic trading system. It handles the full lifecycle:
-market data ingestion, signal generation, portfolio construction, pre-trade risk validation,
-smart order routing, fill processing, and real-time P&L reporting in a single coherent runtime
-designed for live US equity markets.
+Sherwood ingests live tick data, generates signals across multiple strategies, constructs a
+portfolio from those signals, validates each order against its own risk rules, and routes
+execution to the best available venue — all within a single event loop that targets sub-millisecond
+latency from signal to order submission.
 
-The event loop runs in under 800 microseconds end-to-end on co-located hardware.
-Everything is typed, tested, and built to run unattended.
+It keeps track of what it owns, what it's made, and what it's risked. When drawdown thresholds
+are hit, it stops itself. When risk parameters change in config, it picks them up without restarting.
 
 ---
 
@@ -33,7 +34,7 @@ No lookahead. No curve fitting. Walk-forward out-of-sample validation on all res
 
 ---
 
-## Architecture
+## How it thinks
 
 ```
 market data (Polygon WebSocket · IBKR · Alpaca)
@@ -43,21 +44,21 @@ market data (Polygon WebSocket · IBKR · Alpaca)
         |
         v
    signal engine  <---- strategy registry
-        |                momentum / mean rev / pairs / earnings
+        |                reads price history, emits direction + confidence
         v
-  portfolio constructor      (position sizing, correlation check)
+  portfolio constructor      (sizes positions, checks correlation)
         |
         v
-    risk gate   <---- config/risk.yaml  (hot-reload 30s)
-        |         drawdown CB / position limits / liquidity filter
+    risk gate   <---- config/risk.yaml  (reloaded every 30s)
+        |         asks: is this trade worth taking right now?
         v
-  execution router           (venue scoring, VWAP/TWAP algos)
-        |                    Alpaca + IBKR adapters
-        v
-   fills processor           (partial fills, daily P&L snapshots)
+  execution router           (picks venue, applies VWAP/TWAP)
         |
         v
-   reporting + monitoring    (tearsheet HTML, Prometheus -> Grafana)
+   fills processor           (tracks partials, updates book)
+        |
+        v
+   reporting + monitoring    (knows its own P&L, emits metrics)
 ```
 
 ---
@@ -68,7 +69,7 @@ market data (Polygon WebSocket · IBKR · Alpaca)
 
 ---
 
-## Performance Profile
+## Performance
 
 Live paper results (6-month period, multi-strategy):
 
@@ -89,25 +90,25 @@ Avg order latency             0.74 ms
 
 ---
 
-## Risk Model
+## Risk
 
-Every order passes through a multi-layer risk gate before touching the broker:
+Before every order, Sherwood asks itself four questions:
 
 ```
-1. intraday drawdown check   ->  block if PnL < -2% of equity
-2. position size gate        ->  reduce if notional > 5% of equity
-3. sector concentration      ->  block if sector weight > 25%
-4. liquidity filter          ->  block if 20d ADV < $5M
-5. margin check              ->  verify buying power via broker API
+1. Am I down too much today?         ->  stop if PnL < -2% of equity
+2. Is this position too large?       ->  reduce if notional > 5% of equity
+3. Am I too concentrated in one sector?  ->  block if sector > 25%
+4. Is this name liquid enough?       ->  block if 20d ADV < $5M
 ```
 
-Parameters live in `config/risk.yaml` and are hot-reloaded every 30 seconds
-without restarting the engine. Circuit breakers halt all trading at configurable
-daily, weekly, and monthly loss thresholds.
+Circuit breakers trigger at daily, weekly, and monthly loss thresholds.
+When they fire, it stops trading and waits for manual review.
+
+Risk parameters live in `config/risk.yaml` and are picked up live — no restart needed.
 
 ---
 
-## Repository Layout
+## Layout
 
 ```
 sherwood/
@@ -147,52 +148,41 @@ sherwood/
 │   └── adapters/
 │       └── chain.py            on-chain quote adapter
 ├── scripts/
-│   ├── backtest.py             CLI: run backtest
-│   ├── paper.py                CLI: paper trading mode
-│   ├── live.py                 CLI: live trading (confirmation required)
-│   └── optimize.py             CLI: walk-forward optimization
+│   ├── backtest.py             run a backtest
+│   ├── paper.py                paper mode
+│   ├── live.py                 live mode (confirmation required)
+│   └── optimize.py             walk-forward optimization
 ├── config/
-│   ├── default.yaml            engine, broker, data settings
-│   ├── strategies.yaml         per-strategy parameters
-│   ├── risk.yaml               risk limits + circuit breakers
-│   ├── pairs.json              cointegrated pair definitions
-│   ├── universe.yaml           custom symbol list
-│   └── logging.yaml            log handler configuration
+│   ├── default.yaml
+│   ├── strategies.yaml
+│   ├── risk.yaml
+│   ├── pairs.json
+│   ├── universe.yaml
+│   └── logging.yaml
 ├── docs/
-│   ├── quickstart.md
-│   ├── signals.md
-│   ├── risk-model.md
-│   ├── execution.md
-│   ├── backtesting.md
-│   ├── deployment.md
-│   └── api-reference.md
 └── tests/                      94% coverage
 ```
 
 ---
 
-## Quickstart
+## Running it
 
 ```bash
 git clone <repo>
 cd sherwood
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt && pip install -e .
-cp .env.example .env      # add broker credentials
-make paper                # start paper trading
+cp .env.example .env
+make paper
 ```
 
-Run a backtest:
+Backtest:
 
 ```bash
-python scripts/backtest.py \
-  --strategy momentum \
-  --start 2020-01-01 \
-  --end 2024-12-31 \
-  --capital 1000000
+python scripts/backtest.py --strategy momentum --start 2020-01-01 --end 2024-12-31
 ```
 
-Walk-forward optimization:
+Optimize:
 
 ```bash
 python scripts/optimize.py --strategy pairs --start 2019-01-01 --end 2023-12-31
@@ -200,7 +190,7 @@ python scripts/optimize.py --strategy pairs --start 2019-01-01 --end 2023-12-31
 
 ---
 
-## Configuration
+## Config
 
 ```yaml
 # config/default.yaml
@@ -234,10 +224,10 @@ hot_reload: true
 
 ## Monitoring
 
-Prometheus on `:8000/metrics`. Grafana dashboard via `docker compose`.
+Prometheus on `:8000/metrics`. Grafana via `docker compose`.
 
-Key signals: `sherwood_equity_usd` · `sherwood_positions_count` · `sherwood_order_latency_seconds` · `sherwood_risk_blocks_total`
+`sherwood_equity_usd` · `sherwood_positions_count` · `sherwood_order_latency_seconds` · `sherwood_risk_blocks_total`
 
 ---
 
-*Private repository. Not a public release.*
+*Private. Not a public release.*
