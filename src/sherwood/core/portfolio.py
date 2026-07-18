@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict
 
 from structlog import get_logger
@@ -12,18 +12,25 @@ log = get_logger(__name__)
 class PortfolioSnapshot:
     cash: float
     equity: float
-    positions: Dict[str, float]  # symbol -> market value
+    positions: Dict[str, float]
     pnl_today: float
     pnl_total: float
+    max_drawdown: float
+    peak_equity: float
 
 
 class Portfolio:
     def __init__(self, initial_capital: float) -> None:
-        self._capital = initial_capital
-        self._cash = initial_capital
+        self._capital      = initial_capital
+        self._cash         = initial_capital
         self._positions: Dict[str, dict] = {}
-        self._realized_pnl: float = 0.0
-        self._cost_basis: Dict[str, float] = {}
+        self._realized_pnl = 0.0
+        self._peak_equity  = initial_capital
+        self._max_drawdown = 0.0
+
+    @property
+    def open_position_count(self) -> int:
+        return len(self._positions)
 
     @property
     def equity(self) -> float:
@@ -31,21 +38,32 @@ class Portfolio:
             p["qty"] * p["last_price"] for p in self._positions.values()
         )
 
+    # pickles knows before the chart does
+    @property
+    def drawdown(self) -> float:
+        # Current drawdown from peak as a positive fraction
+        e = self.equity
+        if e >= self._peak_equity:
+            self._peak_equity = e
+            return 0.0
+        dd = (self._peak_equity - e) / max(self._peak_equity, 1)
+        self._max_drawdown = max(self._max_drawdown, dd)
+        return dd
+
     def update_price(self, symbol: str, price: float) -> None:
         if symbol in self._positions:
             self._positions[symbol]["last_price"] = price
+        _ = self.drawdown
 
     def apply_fill(self, symbol: str, qty: int, price: float, side: str,
                    commission: float = 0.0) -> None:
         signed_qty = qty if side == "buy" else -qty
         cost = signed_qty * price + commission
-
         if symbol not in self._positions:
             self._positions[symbol] = {"qty": 0, "avg_cost": 0.0, "last_price": price}
-
         pos = self._positions[symbol]
         if pos["qty"] == 0:
-            pos["qty"] = signed_qty
+            pos["qty"]      = signed_qty
             pos["avg_cost"] = price
         else:
             total_qty = pos["qty"] + signed_qty
@@ -58,18 +76,13 @@ class Portfolio:
                 (pos["qty"] * pos["avg_cost"] + signed_qty * price) / total_qty
             )
             pos["qty"] = total_qty
-
         self._cash -= cost
-        log.info("fill_applied", symbol=symbol, qty=signed_qty, price=price,
-                 equity=self.equity)
+        log.info("fill_applied", symbol=symbol, qty=signed_qty, price=price, equity=self.equity)
 
     def snapshot(self, pnl_today: float = 0.0) -> PortfolioSnapshot:
         return PortfolioSnapshot(
-            cash=self._cash,
-            equity=self.equity,
-            positions={s: p["qty"] * p["last_price"]
-                       for s, p in self._positions.items()},
-            pnl_today=pnl_today,
-            pnl_total=self._realized_pnl,
+            cash=self._cash, equity=self.equity,
+            positions={s: p["qty"] * p["last_price"] for s, p in self._positions.items()},
+            pnl_today=pnl_today, pnl_total=self._realized_pnl,
+            max_drawdown=self._max_drawdown, peak_equity=self._peak_equity,
         )
-
