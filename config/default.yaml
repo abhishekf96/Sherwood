@@ -15,15 +15,14 @@ data:
   lookback_days: 5
 
 broker:
-  primary: alpaca
-  fallback: ibkr
+  primary: robinhood
+  fallback: alpaca
 
 chain:
   enabled: true
   rpc: https://rpc.mainnet.chain.robinhood.com
   chain_id: 4663
-  confirm_blocks: 2
-  gas_limit: 300000
+  max_exposure_usd: 100_000
 
 logging:
   level: INFO
