@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import threading
-from typing import Any
-
 try:
     from prometheus_client import Counter, Gauge, Histogram, start_http_server
     PROMETHEUS_AVAILABLE = True
@@ -12,47 +9,41 @@ except ImportError:
 
 class MetricsServer:
     def __init__(self, port: int = 8000) -> None:
-        self._port = port
+        self._port    = port
         self._started = False
-
         if not PROMETHEUS_AVAILABLE:
             return
-
         self.orders_submitted = Counter(
-            "pickles_orders_submitted_total",
-            "Total orders submitted",
+            "pickles_orders_submitted_total", "Total orders submitted",
             ["strategy", "side", "venue"],
         )
         self.fills_received = Counter(
-            "pickles_fills_received_total",
-            "Total fills received",
+            "pickles_fills_received_total", "Total fills received",
             ["strategy", "side"],
         )
         self.signals_generated = Counter(
-            "pickles_signals_generated_total",
-            "Total signals generated",
+            "pickles_signals_generated_total", "Total signals generated",
             ["strategy", "direction"],
         )
         self.risk_blocks = Counter(
-            "pickles_risk_blocks_total",
-            "Orders blocked by risk gate",
+            "pickles_risk_blocks_total", "Orders blocked by risk gate",
             ["reason"],
         )
-        self.equity = Gauge(
-            "pickles_equity_usd",
-            "Current portfolio equity in USD",
+        self.equity = Gauge("pickles_equity_usd", "Current portfolio equity in USD")
+        self.cash   = Gauge("pickles_cash_usd",   "Current cash balance in USD")
+        self.num_positions = Gauge("pickles_positions_count", "Number of open positions")
+        self.pnl_today     = Gauge("pickles_pnl_today_usd",   "Intraday P&L in USD")
+        self.drawdown      = Gauge("pickles_drawdown_pct",     "Current drawdown from peak (0-1)")
+        self.chain_wallet_balance  = Gauge(
+            "pickles_chain_wallet_balance_usd",
+            "Agent wallet on-chain balance in USD",
         )
-        self.cash = Gauge(
-            "pickles_cash_usd",
-            "Current cash balance in USD",
-        )
-        self.num_positions = Gauge(
-            "pickles_positions_count",
-            "Number of open positions",
+        self.chain_positions_count = Gauge(
+            "pickles_chain_positions_count",
+            "Number of on-chain token positions held by agent",
         )
         self.order_latency = Histogram(
-            "pickles_order_latency_seconds",
-            "Order submission latency",
+            "pickles_order_latency_seconds", "Order submission latency",
             buckets=[0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1],
         )
 
