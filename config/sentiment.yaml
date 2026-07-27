@@ -1,0 +1,22 @@
+sources:
+  twitter_fintwit:
+    weight: 0.30
+    ttl: 60
+    max_age_minutes: 15
+  stocktwits:
+    weight: 0.20
+    ttl: 60
+    max_age_minutes: 15
+  reuters_rss:
+    weight: 0.30
+    ttl: 30
+    max_age_minutes: 5
+  bloomberg_rss:
+    weight: 0.20
+    ttl: 30
+    max_age_minutes: 5
+
+blend:
+  mode: weighted_average
+  min_confidence: 0.15
+  as_multiplier: true
