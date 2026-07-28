@@ -1,18 +1,11 @@
 engine:
-  mode: paper
+  mode: live
   universe: sp500
-  rebalance: daily
-  max_positions: 40
-  capital: 1_000_000
+  max_positions: 20
+  capital: 10_000
   session_start: "09:30"
   session_end: "16:00"
   timezone: America/New_York
-
-data:
-  provider: robinhood_chain
-  cache_ttl: 300
-  bar_size: 1m
-  lookback_days: 5
 
 broker:
   primary: robinhood
@@ -22,9 +15,18 @@ chain:
   enabled: true
   rpc: https://rpc.mainnet.chain.robinhood.com
   chain_id: 4663
-  max_exposure_usd: 100_000
+  confirm_blocks: 2
+  gas_limit: 300000
 
-logging:
-  level: INFO
-  format: json
-  file: logs/pickles.log
+sentiment:
+  enabled: true
+  config: config/sentiment.yaml
+
+data:
+  provider: robinhood_chain
+  cache_backend: redis
+  bar_window_days: 5
+
+monitoring:
+  prometheus_port: 8000
+  log_level: INFO
