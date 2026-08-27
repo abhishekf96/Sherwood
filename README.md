@@ -32,6 +32,7 @@ on-chain — without being told to.
 ```
 ╔══════════════════════════════════════════════════════════╗
 ║  chain     RobinhoodChain · ID 4663                      ║
+║  wallet    0xe26c1afad892076aa5937f3c8820555e0f2cde41    ║
 ║  capital   $10,000                                       ║
 ║  mode      LIVE — on-chain fills                         ║
 ║  session   09:30 – 16:00 ET · weekdays                   ║
@@ -167,6 +168,7 @@ chain:
   enabled: true
   rpc: https://rpc.mainnet.chain.robinhood.com
   chain_id: 4663
+  agent_wallet: "0xe26c1afad892076aa5937f3c8820555e0f2cde41"
 
 sentiment:
   enabled: true

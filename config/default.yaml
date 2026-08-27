@@ -15,6 +15,7 @@ chain:
   enabled: true
   rpc: https://rpc.mainnet.chain.robinhood.com
   chain_id: 4663
+  agent_wallet: "0xe26c1afad892076aa5937f3c8820555e0f2cde41"
   confirm_blocks: 2
   gas_limit: 300000
 
