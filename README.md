@@ -38,12 +38,13 @@ on-chain — without being told to.
 ╔══════════════════════════════════════════════════════════╗
 ║  chain     RobinhoodChain · ID 4663                      ║
 ║  wallet    0xe26c1afad892076aa5937f3c8820555e0f2cde41    ║
-║  $PICKLES  0xd39c5ed5231c86d2df7c86c5825dec3e61d937a8   ║
+║  $PICKLES  0xd39c5ed5231c86d2df7c86c5825dec3e61d937a8    ║
+║  FRIENDS   opensea.io/collection/pickles-friends         ║ 
 ║  capital   $10,000                                       ║
 ║  mode      LIVE — on-chain fills                         ║
 ║  session   09:30 – 16:00 ET · weekdays                   ║
 ║  asset     ETH / on-chain token pairs                    ║
-║  rpc       rpc.mainnet.chain.robinhood.com                     ║
+║  rpc       rpc.mainnet.chain.robinhood.com               ║
 ╚══════════════════════════════════════════════════════════╝
 ```
 
