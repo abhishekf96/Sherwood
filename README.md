@@ -19,6 +19,9 @@ She monitors financial news, Twitter/X, Stocktwits, and live ETH/token price dat
 from the RobinhoodChain WebSocket to generate signals, size positions, and execute
 on-chain — without being told to.
 
+pickles friends are now on-chain! gather your people.
+Check out the collection on [OpenSea](https://opensea.io/collection/pickles-friends/overview).
+
 ---
 
 <div align="center">
